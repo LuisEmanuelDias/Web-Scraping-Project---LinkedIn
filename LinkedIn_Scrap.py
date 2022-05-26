@@ -48,7 +48,7 @@ while number_page<40:
             else:
                 dict_words[palabra] = 1
     print("Guardando datos...")
-    with open('word_frecuency',"w") as file:
+    with open('word_frecuency.csv',"w") as file:
             for word,value in dict_words.items():
                 file.write(f"{word};{value}\n") 
     number_page += 1        #Pasamos a la siguiente página
