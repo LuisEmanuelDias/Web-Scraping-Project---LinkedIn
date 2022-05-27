@@ -1,31 +1,41 @@
-import matplotlib.pyplot as plt
 import pandas as pd
-from wordcloud import WordCloud, STOPWORDS
+import re
 
-palabras_linkedin = pd.read_csv("word_frecuency",delimiter=';',names=["Job","Count"])
-palabras_related_to_job = pd.read_csv("list_technical_words",names = ["words"])
+def generar_texto(extras=[]):
+    """Genera diccionario de palabras con la interseccion de los contenidos en
+    los archivos 'word_frecuency' y 'list_technical_words'
 
-palabras_extras = ["java","scala","warehouse"]
-palabras_related_to_job["words"].append(pd.Series(palabras_extras))
+    Args:
+        extras (list, str): lista de palabras tecnicas que se quieran agregar). Por defecto es [].
 
-palabras_linkedin_s_outliers = palabras_linkedin[(palabras_linkedin["Count"]< ((palabras_linkedin["Count"].mean())+ 3*(palabras_linkedin["Count"].std())))]
+    Returns:
+        dict: retorna el diccionario de palabras
+    """
+    palabras_linkedin = pd.read_csv("word_frecuency",delimiter=';',names=["Job","Count"])
+    palabras_related_to_job = pd.read_csv("list_technical_words",names = ["words"])
+
+    palabras_extras = extras
+    palabras_related_to_job["words"].append(pd.Series(palabras_extras))
+    
+    palabras_linkedin_s_outliers = palabras_linkedin[(palabras_linkedin["Count"]< 
+                                                    ((palabras_linkedin["Count"].mean())+ 3*(palabras_linkedin["Count"].std())))]
 
 
-palabras_filtradas = pd.merge(palabras_linkedin_s_outliers,palabras_related_to_job,left_on='Job',right_on='words')
+    plink = palabras_linkedin_s_outliers.to_dict()
 
-texto = ""
+    for k,v in plink.items():
+        if re.match("[^s]$",k):
+            plink[k] += plink[k+"s"]
+            plink[k+"s"] = plink[k]
 
-for x in palabras_filtradas["Job"]:
-    texto += f"{x} "*int(palabras_filtradas["Count"][palabras_filtradas["Job"] == x])
+    palabras_linkedin_s_outliers = pd.DataFrame.from_dict(plink)
+    
+    palabras_filtradas = pd.merge(palabras_linkedin_s_outliers,palabras_related_to_job,left_on='Job',right_on='words')
+    
+    dict_words = {}
 
-stopwords = ["data","engineer","engineering","analytics","science","plan","developer","user","visualization","business","management","learning"]
-# Create and generate a word cloud image:
-wordcloud = WordCloud(collocations=False,stopwords= stopwords).generate(texto)
+    for word in palabras_filtradas["Job"]:
+        dict_words[word]= int(palabras_filtradas["Count"][palabras_filtradas["Job"] == word])
+    return dict_words
 
-# Display the generated image:
-plt.imshow(wordcloud, interpolation='bilinear')
-plt.axis("off")
-plt.title("Palabras comunes en postulaciones para Jr. Data Engineer")
-plt.savefig("cloud.png", format="png")
-plt.show()
 
