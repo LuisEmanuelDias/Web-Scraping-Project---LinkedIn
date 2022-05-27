@@ -5,7 +5,7 @@ import data_visualization as dv
 
 print("Este mini proyecto permite visualizar a través de un wordcloud las palabras técnicas comunes en búsquedas de Jr. Data Engineer")
 pais = input("Escriba un país para realizar la búsqueda: ")
-paginas = input("Escriba la cantidad de páginas de LinkedIn que desea analizar: (si está apura coloque 10 o menos) " )
+paginas = input("Escriba la cantidad de páginas de LinkedIn que desea analizar (si está apurado coloque 10 o menos): " )
 
 #Inicia el proceso de extracción y conteo de palabras en postulaciones de LinkedIn
 palabras_linkedin = ls.info_preciosa(pais,int(paginas))
