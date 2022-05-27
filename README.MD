@@ -8,4 +8,4 @@
 
 La siguiente es una wordcloud obtenida para **España** buscando en 40 páginas *(461 postulaciones para Jr)*. 
 
-![Imagen](cloud.png)
+![Imagen](cloud_muestra.png)
